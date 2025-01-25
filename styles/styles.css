@@ -1,0 +1,92 @@
+:root {
+  --couleur-noire: black;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(to right, #520052, #cf04cf);
+}
+
+/*//////////////HEADER//////////////*/
+header {
+  position: relative;
+}
+.menu {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: purple;
+  z-index: 1;
+}
+
+.menu .barre-navigation {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-around;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: var(--couleur-noire);
+  font-size: 2rem;
+}
+
+/*/ /////////////MAIN//////////////*/
+main {
+  /* display: flex;
+  justify-content: center; */
+  background-color: red;
+}
+
+.entete {
+  background-color: aqua;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.entete h1 {
+  font-size: 7rem;
+}
+.entete h2 {
+  font-size: 4rem;
+}
+/*Section 1 : règles en fonction du physique pour être désirable*/
+.regles-physiques {
+  position: relative;
+  padding: 2rem 2rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.regles-physiques h1 {
+  text-align: center;
+  font-size: 6rem;
+}
+
+.recs {
+  display: flex;
+  flex-direction: column;
+}
+
+.rec {
+  border: 1px solid var(--couleur-noire);
+  width: 400px;
+  height: 330px;
+  background-color: chartreuse;
+}
+.rec:nth-child(even) {
+  align-self: end;
+}
+
+/*/ /////////////FOOTER//////////////*/
+/* footer {
+  width: 100%;
+  height: 10vh;
+  background-color: var(--couleur-noire);
+}
+footer h1 {
+  color: white;
+} */

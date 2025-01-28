@@ -12,7 +12,7 @@ const camera = new THREE.PerspectiveCamera(
 //Rendu
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setAnimationLoop(animate); // Animation de l'ancienne version du cube vert fluo
+renderer.setAnimationLoop(render);
 document.body.appendChild(renderer.domElement);
 
 //Géométrie, mesh, matériel

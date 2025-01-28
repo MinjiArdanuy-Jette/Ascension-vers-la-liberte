@@ -9,6 +9,18 @@ body {
   background-image: url("../images/papier-parchemin-veilli.png");
 }
 
+/* Style pour le texte dans la lascène d'exemple avec Three.js */
+
+#info {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+  display: block;
+  color: white;
+}
+
 /*//////////////HEADER//////////////*/
 header {
   position: relative;

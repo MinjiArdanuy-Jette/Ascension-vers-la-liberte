@@ -51,6 +51,15 @@ main {
   justify-content: center; */
   /* background-color: red; */
 }
+/* Canvas pour Three.js */
+
+#three-canvas {
+  z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
 
 .entete {
   /* background-color: aqua; */

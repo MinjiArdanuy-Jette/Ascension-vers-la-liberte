@@ -9,7 +9,7 @@ body {
   background-image: url("../images/papier-parchemin-veilli.png");
 }
 
-/* Style pour le texte dans la lascène d'exemple avec Three.js */
+/* Style pour le texte dans la la scène d'exemple avec Three.js */
 
 #info {
   position: absolute;
@@ -54,7 +54,7 @@ main {
 /* Canvas pour Three.js */
 
 #three-canvas {
-  z-index: -1;
+  z-index: 1;
   position: fixed;
   top: 0;
   left: 0;
@@ -94,6 +94,19 @@ main {
   display: flex;
   flex-direction: column;
 }
+.contenu-rec {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  opacity: 0;
+  transform: translateY(100px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.contenu-rec.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 .rec {
   border: 1px solid var(--couleur-noire);
@@ -101,8 +114,8 @@ main {
   height: 330px;
   background-color: chartreuse;
 }
-.rec:nth-child(even) {
-  align-self: end;
+.contenu-rec:nth-child(even) {
+  flex-direction: row-reverse;
 }
 
 /*/ /////////////FOOTER//////////////*/

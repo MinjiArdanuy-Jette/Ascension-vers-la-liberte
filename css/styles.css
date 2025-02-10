@@ -6,7 +6,7 @@ body {
   width: 100%;
   height: 100vh;
   /* background: linear-gradient(to right, #520052, #cf04cf); */
-  background-image: url("../images/papier-parchemin-veilli.png");
+  background-image: url("../images/arrière-plan-nuit.png");
 }
 
 /* Style pour le texte dans la la scène d'exemple avec Three.js */
@@ -60,6 +60,14 @@ main {
   left: 0;
   background-color: transparent;
 }
+
+/* #machine-canvas {
+  z-index: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+} */
 
 .entete {
   /* background-color: aqua; */

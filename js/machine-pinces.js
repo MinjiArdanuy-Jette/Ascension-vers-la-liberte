@@ -18,9 +18,7 @@ camera.position.x = -5;
 // Rendu
 const canvas = document.querySelector("#machine-canvas");
 const renderer = new THREE.WebGLRenderer({
-  // antialias: true,
   canvas,
-  // alpha: true,
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -29,21 +27,14 @@ const ambientLight = new THREE.AmbientLight("white", 1);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight("white", 0.5);
-directionalLight.position.x = 1;
-directionalLight.position.z = 1;
+directionalLight.position.set(1, 1, 1);
 scene.add(directionalLight);
 
-// gltf loader
+// GLTF Loader pour charger les modèles
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
   const mesh = gltf.scene.children[0];
-  // Inspecter les matériaux des enfants du modèle
-  mesh.traverse((child) => {
-    if (child.isMesh) {
-      console.log(child.material); // Affiche les matériaux appliqués
-    }
-  });
-  // mesh.rotation.y = 0.1;
+  let manette = mesh.getObjectByName("Manette");
   scene.add(mesh);
 });
 
@@ -72,29 +63,66 @@ function animate() {
 }
 animate();
 
-//Importation des différentes peluches
-function importerPeluches(url, position, scale = 0.2) {
+/*********************IMPORTATION PELUCHES ******************** */
+
+// Importation des différentes peluches
+function importerPeluches(url, position, scale = 1) {
   gltfLoader.load(url, (gltf) => {
     let peluche = gltf.scene;
-    peluche.position.set(position.x, position.y, position.z), scale;
+    peluche.position.set(position.x, position.y, position.z);
+    peluche.scale.set(scale, scale, scale);
+
+    peluche.rotation.y = Math.random() * Math.PI * 2;
+    peluche.rotation.x = Math.random() * 0.2 - 0.1;
+    peluche.rotation.z = Math.random() * 0.2 - 0.1;
+
+    // Créer un corps physique pour la peluche
+    const peluchePhysique = new CANNON.Body({
+      shape: new CANNON.Sphere(0.5 * scale), // Approximé par une sphère (tu peux ajuster la taille)
+      mass: 5, // Masse de la peluche
+    });
+
+    peluchePhysique.position.set(position.x, position.y, position.z); // Position du corps physique
+    monMonde.addBody(peluchePhysique); // Ajouter au monde physique
+
+    // Lier l’objet Three.js au corps physique
+    peluche.userData.physicsBody = peluchePhysique;
+
     scene.add(peluche);
   });
 }
 
-//Générer des peluches
-let nombreOurs = 5;
-for (let i = 0; i < nombreOurs; i++) {
-  let posX = (Math.random() - 0.5) * 2; // Réduit la dispersion en X
-  let posY = Math.random() * 10; // Position aléatoire en hauteur
-  let posZ = (Math.random() - 0.5) * 4; // Réduit la dispersion en Z
-  importerPeluches("./modeles/Ours.glb", { x: posX, y: posY, z: posZ }, 0, 5);
-}
+// Données des peluches
+const peluches = [
+  {
+    url: "./modeles/Ours.glb",
+    nombre: 2,
+    dispersionX: 2,
+    dispersionY: 8,
+    dispersionZ: 2,
+  },
+  {
+    url: "./modeles/Lapin.glb",
+    nombre: 2,
+    dispersionX: 5,
+    dispersionY: 12,
+    dispersionZ: 2,
+  },
+  {
+    url: "./modeles/Chat.glb",
+    nombre: 2,
+    dispersionX: 2,
+    dispersionY: 10,
+    dispersionZ: 4,
+  },
+];
 
-//Générer des peluches
-let nombreLapin = 5;
-for (let i = 0; i < nombreLapin; i++) {
-  let posX = (Math.random() - 0.5) * 2; // Réduit la dispersion en X
-  let posY = Math.random() * 10; // Position aléatoire en hauteur
-  let posZ = (Math.random() - 0.5) * 4; // Réduit la dispersion en Z
-  importerPeluches("./modeles/Lapin.glb", { x: posX, y: posY, z: posZ }, 0.5);
-}
+// Génération des peluches
+peluches.forEach(({ url, nombre, dispersionX, dispersionY, dispersionZ }) => {
+  for (let i = 0; i < nombre; i++) {
+    let posX = (Math.random() - 0.5) * dispersionX;
+    let posY = Math.random() * dispersionY;
+    let posZ = (Math.random() - 0.5) * dispersionZ;
+    importerPeluches(url, { x: posX, y: posY, z: posZ }, 0.5);
+  }
+});

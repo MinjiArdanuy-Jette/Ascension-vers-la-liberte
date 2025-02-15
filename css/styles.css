@@ -6,7 +6,8 @@ body {
   width: 100%;
   height: 100vh;
   /* background: linear-gradient(to right, #520052, #cf04cf); */
-  background-image: url("../images/arrière-plan-nuit.png");
+  /* background-image: url("../images/arrière-plan-nuit.png"); */
+  background-image: url("../images/papier-parchemin-veilli.png");
 }
 
 /* Style pour le texte dans la la scène d'exemple avec Three.js */

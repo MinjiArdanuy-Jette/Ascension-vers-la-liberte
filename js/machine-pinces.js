@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
+// import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 // Scène, caméra et rendu
 const scene = new THREE.Scene();
@@ -11,9 +12,9 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 // Positionner la caméra
-camera.position.z = 10;
-camera.position.y = 15;
-camera.position.x = -5;
+camera.position.z = -17.2038809099845;
+camera.position.y = 16.85847416954149;
+camera.position.x = -0.06799774919210766;
 
 // Rendu
 const canvas = document.querySelector("#machine-canvas");
@@ -37,6 +38,16 @@ gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
   let manette = mesh.getObjectByName("Manette");
   scene.add(mesh);
 });
+
+// // Contrôles OrbitControls pour naviguer avec la souris
+// const controls = new OrbitControls(camera, renderer.domElement);
+
+// // Permet d'afficher la position de la caméra dans la console
+// controls.addEventListener("change", () => {
+//   console.log(
+//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
+//   );
+// });
 
 // Définir un angle cible en radians (-Math.PI/4 = -45° vers la gauche)
 const targetAngle = -Math.PI;
@@ -75,18 +86,6 @@ function importerPeluches(url, position, scale = 1) {
     peluche.rotation.y = Math.random() * Math.PI * 2;
     peluche.rotation.x = Math.random() * 0.2 - 0.1;
     peluche.rotation.z = Math.random() * 0.2 - 0.1;
-
-    // Créer un corps physique pour la peluche
-    const peluchePhysique = new CANNON.Body({
-      shape: new CANNON.Sphere(0.5 * scale), // Approximé par une sphère (tu peux ajuster la taille)
-      mass: 5, // Masse de la peluche
-    });
-
-    peluchePhysique.position.set(position.x, position.y, position.z); // Position du corps physique
-    monMonde.addBody(peluchePhysique); // Ajouter au monde physique
-
-    // Lier l’objet Three.js au corps physique
-    peluche.userData.physicsBody = peluchePhysique;
 
     scene.add(peluche);
   });

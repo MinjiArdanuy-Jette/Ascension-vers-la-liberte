@@ -30,14 +30,70 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight("white", 0.5);
 directionalLight.position.set(1, 1, 1);
 scene.add(directionalLight);
+let manette;
 
 // GLTF Loader pour charger les modèles
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
-  const mesh = gltf.scene.children[0];
-  let manette = mesh.getObjectByName("Manette");
+  const mesh = gltf.scene;
+  manette = mesh.getObjectByName("Manette");
+
   scene.add(mesh);
 });
+
+//Contrôles de la manette
+let manetteDroite = false;
+let manetteGauche = false;
+let manetteHaut = false;
+let manetteBas = false;
+
+// Écouter les événements de clavier
+window.addEventListener("keydown", (event) => {
+  switch (event.key) {
+    case "ArrowLeft":
+    case "a":
+      manetteGauche = true;
+      break;
+    case "ArrowRight":
+    case "d":
+      manetteDroite = true;
+      break;
+    case "ArrowUp":
+    case "w":
+      manetteHaut = true;
+      break;
+    case "ArrowDown":
+    case "s":
+      manetteBas = true;
+      break;
+  }
+  event.preventDefault(); // Empêche le défilement de la page
+});
+
+window.addEventListener("keyup", (event) => {
+  switch (event.key) {
+    case "ArrowLeft":
+    case "a":
+      manetteGauche = false;
+      break;
+    case "ArrowRight":
+    case "d":
+      manetteDroite = false;
+      break;
+    case "ArrowUp":
+    case "w":
+      manetteHaut = false;
+      break;
+    case "ArrowDown":
+    case "s":
+      manetteBas = false;
+      break;
+  }
+  event.preventDefault();
+});
+
+const angleOrigineManette = 0; // Angle de base sur l'axe z (à adapter selon ton modèle)
+const vitesseRetour = 0.05; // Vitesse du retour progressif
 
 // // Contrôles OrbitControls pour naviguer avec la souris
 // const controls = new OrbitControls(camera, renderer.domElement);
@@ -70,6 +126,72 @@ function animate() {
       animationActive = false; // Stopper l'animation
     }
   }
+
+  // Ajuste selon les limites que tu souhaites
+  const limiteGauche = -0.5; // Limite de rotation vers la gauche
+  const limiteDroite = 0.5; // Limite de rotation vers la droite
+  const limiteHaut = -0.5; // Limite de rotation vers le haut
+  const limiteBas = 0.5; // Limite de rotation vers le bas
+
+  // Déplacer la manette avec les touches fléchées gauche/droite
+  if (manette) {
+    if (manetteGauche) {
+      manette.rotation.x -= 0.05; // Déplacement à gauche
+      if (manette.rotation.x < limiteGauche) {
+        manette.rotation.x = limiteGauche;
+      }
+    }
+    if (manetteDroite) {
+      manette.rotation.x += 0.05; // Déplacement à droite
+      if (manette.rotation.x > limiteDroite) {
+        manette.rotation.x = limiteDroite;
+      }
+    }
+
+    if (manetteHaut) {
+      manette.rotation.z -= 0.05; // Déplacement à droite
+      if (manette.rotation.z < limiteHaut) {
+        manette.rotation.z = limiteHaut;
+      }
+    }
+
+    if (manetteBas) {
+      manette.rotation.z += 0.05; // Déplacement à droite
+      if (manette.rotation.z > limiteBas) {
+        manette.rotation.z = limiteBas;
+      }
+    }
+    console.log("Position de la manette : ", manette.position.x);
+
+    // Retour progressif vers l'angle d'origine si aucune touche n'est enfoncée
+    if (!manetteGauche && !manetteDroite) {
+      if (manette.rotation.x > angleOrigineManette) {
+        manette.rotation.x -= vitesseRetour;
+        if (manette.rotation.x < angleOrigineManette) {
+          manette.rotation.x = angleOrigineManette; // Corrige pour éviter de dépasser
+        }
+      } else if (manette.rotation.x < angleOrigineManette) {
+        manette.rotation.x += vitesseRetour;
+        if (manette.rotation.x > angleOrigineManette) {
+          manette.rotation.x = angleOrigineManette; // Corrige pour éviter de dépasser
+        }
+      }
+    }
+    if (!manetteHaut && !manetteBas) {
+      if (manette.rotation.z > angleOrigineManette) {
+        manette.rotation.z -= vitesseRetour;
+        if (manette.rotation.z < angleOrigineManette) {
+          manette.rotation.z = angleOrigineManette;
+        }
+      } else if (manette.rotation.z < angleOrigineManette) {
+        manette.rotation.z += vitesseRetour;
+        if (manette.rotation.z > angleOrigineManette) {
+          manette.rotation.z = angleOrigineManette;
+        }
+      }
+    }
+  }
+
   renderer.render(scene, camera);
 }
 animate();

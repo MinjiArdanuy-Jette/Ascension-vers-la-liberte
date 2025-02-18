@@ -1,5 +1,5 @@
 :root {
-  --couleur-noire: black;
+  --couleur-blanche: white;
 }
 
 body {
@@ -10,16 +10,14 @@ body {
   background-image: url("../images/papier-parchemin-veilli.png");
 }
 
-/* Style pour le texte dans la la scène d'exemple avec Three.js */
-
-#info {
-  position: absolute;
-  top: 10px;
-  width: 100%;
-  text-align: center;
-  z-index: 100;
-  display: block;
-  color: white;
+.heure-fond {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8vw;
+  opacity: 0.1; /* pour que ça fasse "arrière-plan" */
+  pointer-events: none; /* pour éviter de gêner les clics */
 }
 
 /*//////////////HEADER//////////////*/
@@ -30,7 +28,7 @@ header {
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: purple;
+  background-color: black;
   z-index: 1;
 }
 
@@ -42,7 +40,7 @@ header {
 
 .menu li a {
   text-decoration: none;
-  color: var(--couleur-noire);
+  color: var(--couleur-blanche);
   font-size: 2rem;
 }
 

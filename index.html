@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accueil</title>
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"
+    ></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.156.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.156.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header>
+      <nav class="menu">
+        <ul class="barre-navigation">
+          <li><a href="">Brochure</a></li>
+          <li><a href="">Informations</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <!-- <canvas id="three-canvas"></canvas> -->
+      <canvas id="enveloppe-canvas"></canvas>
+      <div class="entete">
+        <h1>Guide pour la liberté</h1>
+        <h2>Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="heure-fond" id="heureFond">00:00</div>
+      <section>
+        <h2>
+          Chère Alice, Félicitations ! Vous avez été choisie pour la sélection
+          pour la grande ascension parmi tant d'autres.
+        </h2>
+      </section>
+
+      <section class="regles-physiques" id="section-1">
+        <h1>Règles sur le physique</h1>
+        <div class="recs">
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Vous et avec plusieurs chanceux, êtes la 15000e cohorte qui ont le
+              privilège d'atteindre le sommet. Pour cette grande occasion, nous
+              vous offrons un collier unique que vous pourrez pprter avec
+              élégance lors de la cérémonie de l'Ascension. Il est important de
+              souligner qu'aucun retard n'est permis. On vous invite à vous
+              présenter à 12h12.
+            </p>
+          </div>
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Pour le bon fonctionnement de cette cérémonie, quelques règles
+              sont essentielles.
+            </p>
+          </div>
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>Les vêtements....</p>
+          </div>
+        </div>
+      </section>
+      <section class="regles-physiques" id="section-2">
+        <h1>Règles sur le physique</h1>
+        <div class="recs">
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
+              distinctio error debitis, pariatur blanditiis reprehenderit porro
+              nesciunt quibusdam numquam, fugit dolorem obcaecati libero itaque
+              aperiam fugiat exercitationem repellat? Esse, impedit!
+            </p>
+          </div>
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
+              distinctio error debitis, pariatur blanditiis reprehenderit porro
+              nesciunt quibusdam numquam, fugit dolorem obcaecati libero itaque
+              aperiam fugiat exercitationem repellat? Esse, impedit!
+            </p>
+          </div>
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
+              distinctio error debitis, pariatur blanditiis reprehenderit porro
+              nesciunt quibusdam numquam, fugit dolorem obcaecati libero itaque
+              aperiam fugiat exercitationem repellat? Esse, impedit!
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="regles-physiques" id="section-3">
+        <h1>Règles sur le physique</h1>
+        <div class="recs">
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
+              distinctio error debitis, pariatur blanditiis reprehenderit porro
+              nesciunt quibusdam numquam, fugit dolorem obcaecati libero itaque
+              aperiam fugiat exercitationem repellat? Esse, impedit!
+            </p>
+          </div>
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
+              distinctio error debitis, pariatur blanditiis reprehenderit porro
+              nesciunt quibusdam numquam, fugit dolorem obcaecati libero itaque
+              aperiam fugiat exercitationem repellat? Esse, impedit!
+            </p>
+          </div>
+          <div class="contenu-rec">
+            <div class="rec"></div>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
+              distinctio error debitis, pariatur blanditiis reprehenderit porro
+              nesciunt quibusdam numquam, fugit dolorem obcaecati libero itaque
+              aperiam fugiat exercitationem repellat? Esse, impedit!
+            </p>
+          </div>
+        </div>
+      </section>
+      <canvas id="machine-canvas"></canvas>
+    </main>
+    <script type="module" src="js/machine-pinces.js"></script>
+    <script type="module" src="js/enveloppe.js"></script>
+    <script src="js/defilement.js"></script>
+  </body>
+</html>

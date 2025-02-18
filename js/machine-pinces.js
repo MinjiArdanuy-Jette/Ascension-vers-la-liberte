@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
-// import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 // Scène, caméra et rendu
 const scene = new THREE.Scene();
@@ -31,12 +31,32 @@ const directionalLight = new THREE.DirectionalLight("white", 0.5);
 directionalLight.position.set(1, 1, 1);
 scene.add(directionalLight);
 let manette;
+let boutonManette;
+let railHorizontal;
+let railVertical;
+
+const limitesRailHorizontal = {
+  minY: -0.4, // Limite basse
+  maxY: 0.4, // Limite haute
+};
+
+const limitesRailVertical = {
+  minZ: -4, // Limite gauche
+  maxZ: 4, // Limite droite
+};
 
 // GLTF Loader pour charger les modèles
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
   const mesh = gltf.scene;
   manette = mesh.getObjectByName("Manette");
+  boutonManette = mesh.getObjectByName("Bouton-manette");
+  railHorizontal = mesh.getObjectByName("Rail_horizontal");
+  railVertical = mesh.getObjectByName("Rails_verticaux");
+  // //Pour avoir tous les noms d'objets
+  // mesh.traverse((child) => {
+  //   console.log(child.name, child);
+  // });
 
   scene.add(mesh);
 });
@@ -47,63 +67,87 @@ let manetteGauche = false;
 let manetteHaut = false;
 let manetteBas = false;
 
+//Contrôle du bouton
+let boutonPresse = false;
+
+//Permettre une seule direction
+let directionActuelle = null;
+
 // Écouter les événements de clavier
 window.addEventListener("keydown", (event) => {
+  if (directionActuelle) return;
   switch (event.key) {
     case "ArrowLeft":
     case "a":
       manetteGauche = true;
+      directionActuelle = "gauche";
       break;
     case "ArrowRight":
     case "d":
       manetteDroite = true;
+      directionActuelle = "droite";
       break;
     case "ArrowUp":
     case "w":
       manetteHaut = true;
+      directionActuelle = "haut";
       break;
     case "ArrowDown":
     case "s":
       manetteBas = true;
+      directionActuelle = "bas";
+      break;
+    case "Space":
+      boutonPresse = true;
       break;
   }
   event.preventDefault(); // Empêche le défilement de la page
 });
 
 window.addEventListener("keyup", (event) => {
-  switch (event.key) {
+  switch (event.code) {
     case "ArrowLeft":
     case "a":
       manetteGauche = false;
+      if (directionActuelle === "gauche") directionActuelle = null;
       break;
     case "ArrowRight":
     case "d":
       manetteDroite = false;
+      if (directionActuelle === "droite") directionActuelle = null;
       break;
     case "ArrowUp":
     case "w":
       manetteHaut = false;
+      if (directionActuelle === "haut") directionActuelle = null;
       break;
     case "ArrowDown":
     case "s":
       manetteBas = false;
+      if (directionActuelle === "bas") directionActuelle = null;
+      break;
+    case "Space":
+      boutonPresse = true;
       break;
   }
   event.preventDefault();
 });
 
-const angleOrigineManette = 0; // Angle de base sur l'axe z (à adapter selon ton modèle)
+const angleOrigineManette = 0; // Angle de base sur l'axe z (manette)
 const vitesseRetour = 0.05; // Vitesse du retour progressif
+const positionOrigineBouton = 0;
+const limiteEnfoncement = positionOrigineBouton - 0.1; // Ajuste selon tes besoins
+const vitesseRetourBouton = 0.05;
 
-// // Contrôles OrbitControls pour naviguer avec la souris
-// const controls = new OrbitControls(camera, renderer.domElement);
+// Contrôles OrbitControls pour naviguer avec la souris
+const controls = new OrbitControls(camera, renderer.domElement);
 
-// // Permet d'afficher la position de la caméra dans la console
-// controls.addEventListener("change", () => {
-//   console.log(
-//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
-//   );
-// });
+// Permet d'afficher la position de la caméra dans la console
+controls.addEventListener("change", () => {
+  console.log(
+    `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
+  );
+});
 
 // Définir un angle cible en radians (-Math.PI/4 = -45° vers la gauche)
 const targetAngle = -Math.PI;
@@ -137,31 +181,46 @@ function animate() {
   if (manette) {
     if (manetteGauche) {
       manette.rotation.x -= 0.05; // Déplacement à gauche
-      if (manette.rotation.x < limiteGauche) {
-        manette.rotation.x = limiteGauche;
+      if (railVertical.position.z > limitesRailVertical.minZ) {
+        //Déplacer le rail horizontal à gauche
+        railVertical.position.z -= 0.01;
       }
     }
     if (manetteDroite) {
       manette.rotation.x += 0.05; // Déplacement à droite
+      if (railVertical.position.z < limitesRailVertical.maxZ) {
+        //Déplacer le rail horizontal à droite
+        railVertical.position.z += 0.01;
+      }
       if (manette.rotation.x > limiteDroite) {
         manette.rotation.x = limiteDroite;
+        console.log("Position de la manette : ", manette.position.x);
       }
     }
 
     if (manetteHaut) {
-      manette.rotation.z -= 0.05; // Déplacement à droite
+      manette.rotation.z -= 0.05; // Déplacement vers le haut
+      if (railHorizontal.position.y < limitesRailHorizontal.maxY) {
+        //Déplacer le rail horizontal vers le haut
+        railHorizontal.position.y += 0.01;
+      }
       if (manette.rotation.z < limiteHaut) {
         manette.rotation.z = limiteHaut;
+        console.log("Position de la manette : ", manette.position.y);
       }
     }
 
     if (manetteBas) {
-      manette.rotation.z += 0.05; // Déplacement à droite
+      manette.rotation.z += 0.05; // Déplacement vers le bas
+      if (railHorizontal.position.y > limitesRailHorizontal.minY) {
+        //Déplacer le rail horizontal vers le bas
+        railHorizontal.position.y -= 0.01;
+      }
       if (manette.rotation.z > limiteBas) {
         manette.rotation.z = limiteBas;
+        console.log("Position de la manette : ", manette.position.y);
       }
     }
-    console.log("Position de la manette : ", manette.position.x);
 
     // Retour progressif vers l'angle d'origine si aucune touche n'est enfoncée
     if (!manetteGauche && !manetteDroite) {
@@ -190,6 +249,24 @@ function animate() {
         }
       }
     }
+
+    if (manette.rotation.x < limiteGauche) {
+      manette.rotation.x = limiteGauche;
+      console.log("Position de la manette : ", manette.position.x);
+    }
+  }
+  if (boutonManette) {
+    if (boutonPresse) {
+      if (boutonManette.position.y > limiteEnfoncement) {
+        boutonManette.position.y -= 0.01;
+        // console.log(boutonManette.position.y, "bouton");
+      }
+    }
+    // if (!boutonPresse) {
+    //   if (boutonManette.position.y > positionOrigineBouton) {
+    //     boutonManette.position.y += vitesseRetour;
+    //   }
+    // }
   }
 
   renderer.render(scene, camera);

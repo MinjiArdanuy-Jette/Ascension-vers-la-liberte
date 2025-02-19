@@ -34,10 +34,11 @@ let manette;
 let boutonManette;
 let railHorizontal;
 let railVertical;
+let pince;
 
 const limitesRailHorizontal = {
-  minY: -0.4, // Limite basse
-  maxY: 0.4, // Limite haute
+  minX: 1, // Limite basse
+  maxX: 7, // Limite haute
 };
 
 const limitesRailVertical = {
@@ -53,6 +54,7 @@ gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
   boutonManette = mesh.getObjectByName("Bouton-manette");
   railHorizontal = mesh.getObjectByName("Rail_horizontal");
   railVertical = mesh.getObjectByName("Rails_verticaux");
+  pince = mesh.getObjectByName("Pince");
   // //Pour avoir tous les noms d'objets
   // mesh.traverse((child) => {
   //   console.log(child.name, child);
@@ -200,9 +202,9 @@ function animate() {
 
     if (manetteHaut) {
       manette.rotation.z -= 0.05; // Déplacement vers le haut
-      if (railHorizontal.position.y < limitesRailHorizontal.maxY) {
+      if (railHorizontal.position.x < limitesRailHorizontal.maxX) {
         //Déplacer le rail horizontal vers le haut
-        railHorizontal.position.y += 0.01;
+        railHorizontal.position.x += 0.01;
       }
       if (manette.rotation.z < limiteHaut) {
         manette.rotation.z = limiteHaut;
@@ -212,9 +214,9 @@ function animate() {
 
     if (manetteBas) {
       manette.rotation.z += 0.05; // Déplacement vers le bas
-      if (railHorizontal.position.y > limitesRailHorizontal.minY) {
+      if (railHorizontal.position.x > limitesRailHorizontal.minX) {
         //Déplacer le rail horizontal vers le bas
-        railHorizontal.position.y -= 0.01;
+        railHorizontal.position.x -= 0.01;
       }
       if (manette.rotation.z > limiteBas) {
         manette.rotation.z = limiteBas;
@@ -261,6 +263,9 @@ function animate() {
         boutonManette.position.y -= 0.01;
         // console.log(boutonManette.position.y, "bouton");
       }
+    }
+    if (pince) {
+      pince.rotation.y = 2;
     }
     // if (!boutonPresse) {
     //   if (boutonManette.position.y > positionOrigineBouton) {

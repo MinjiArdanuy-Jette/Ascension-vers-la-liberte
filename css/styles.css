@@ -8,6 +8,7 @@ body {
   /* background: linear-gradient(to right, #520052, #cf04cf); */
   /* background-image: url("../images/arrière-plan-nuit.png"); */
   background-image: url("../images/papier-parchemin-veilli.png");
+  padding: 50px 0;
 }
 
 .heure-fond {
@@ -18,6 +19,10 @@ body {
   font-size: 8vw;
   opacity: 0.1; /* pour que ça fasse "arrière-plan" */
   pointer-events: none; /* pour éviter de gêner les clics */
+}
+
+h2 {
+  font-family: "Playfair Display";
 }
 
 /*//////////////HEADER//////////////*/
@@ -123,6 +128,18 @@ main {
 }
 .contenu-rec:nth-child(even) {
   flex-direction: row-reverse;
+}
+
+.revelation-texte span {
+  opacity: 0;
+  transform: translateY(10px);
+  display: inline-block;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.revelation-texte span.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /*/ /////////////FOOTER//////////////*/

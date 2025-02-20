@@ -141,15 +141,15 @@ const positionOrigineBouton = 0;
 const limiteEnfoncement = positionOrigineBouton - 0.1; // Ajuste selon tes besoins
 const vitesseRetourBouton = 0.05;
 
-// Contrôles OrbitControls pour naviguer avec la souris
-const controls = new OrbitControls(camera, renderer.domElement);
+// // Contrôles OrbitControls pour naviguer avec la souris
+// const controls = new OrbitControls(camera, renderer.domElement);
 
-// Permet d'afficher la position de la caméra dans la console
-controls.addEventListener("change", () => {
-  console.log(
-    `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
-  );
-});
+// // Permet d'afficher la position de la caméra dans la console
+// controls.addEventListener("change", () => {
+//   console.log(
+//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
+//   );
+// });
 
 // Définir un angle cible en radians (-Math.PI/4 = -45° vers la gauche)
 const targetAngle = -Math.PI;
@@ -267,11 +267,6 @@ function animate() {
     if (pince) {
       pince.rotation.y = 2;
     }
-    // if (!boutonPresse) {
-    //   if (boutonManette.position.y > positionOrigineBouton) {
-    //     boutonManette.position.y += vitesseRetour;
-    //   }
-    // }
   }
 
   renderer.render(scene, camera);

@@ -160,6 +160,12 @@ const rotationSpeed = 0.02; // Vitesse de rotation
 
 function animate() {
   requestAnimationFrame(animate);
+  // Appliquer la gravité à chaque peluche
+  scene.children.forEach((child) => {
+    if (child.isMesh) {
+      appliquerGravite(child); // Appliquer la gravité à chaque peluche
+    }
+  });
 
   if (animationActive) {
     // Rotation progressive autour de l'objet
@@ -286,8 +292,24 @@ function importerPeluches(url, position, scale = 1) {
     peluche.rotation.x = Math.random() * 0.2 - 0.1;
     peluche.rotation.z = Math.random() * 0.2 - 0.1;
 
+    // Ajouter un état de chute à la peluche
+    peluche.enChute = true;
+
     scene.add(peluche);
   });
+}
+function appliquerGravite(peluche) {
+  let vitesseGravite = 0.05; // vitesse de la gravité
+  let solY = 0; // Position du sol
+
+  // Fonction de mise à jour pour appliquer la gravité
+  if (peluche.enChute) {
+    peluche.position.y -= vitesseGravite; // Descente de la peluche
+    if (peluche.position.y <= solY) {
+      peluche.position.y = solY; // Arrêter la descente lorsqu'elle touche le sol
+      peluche.enChute = false; // La peluche ne tombe plus
+    }
+  }
 }
 
 // Données des peluches

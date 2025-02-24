@@ -40,6 +40,7 @@ gltfLoader.load("./modeles/enveloppe.glb", (gltf) => {
   mesh.position.z = 1;
 
   camera.position.set(0, 5.777, 1.017);
+  // camera.position.set(0, 2, 1.017);
   camera.lookAt(mesh.position);
 
   if (gltf.animations.length) {
@@ -62,6 +63,16 @@ gltfLoader.load("./modeles/enveloppe.glb", (gltf) => {
     mixer.addEventListener("finished", onAnimationFinished);
   }
 });
+
+// // Contrôles OrbitControls pour naviguer avec la souris
+// const controls = new OrbitControls(camera, renderer.domElement);
+
+// // Permet d'afficher la position de la caméra dans la console
+// controls.addEventListener("change", () => {
+//   console.log(
+//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
+//   );
+// });
 
 function startAnimation() {
   if (actions.length) {
@@ -178,6 +189,5 @@ function nettoyerMateriau(materiel) {
         value.dispose();
       }
     }
-    materiel.dispose();
   }
 }

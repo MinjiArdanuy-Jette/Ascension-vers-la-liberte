@@ -10,6 +10,7 @@ let isZooming = false;
 let zoomProgress = 0;
 const zoomDuration = 2;
 const zoomTargetPosition = new THREE.Vector3(0, 1.5475618749999955, 0.5);
+let canvasJoue = true; // Contrôle la boucle d'animation
 
 let animationJoue = false;
 
@@ -50,31 +51,21 @@ gltfLoader.load("./modeles/enveloppe.glb", (gltf) => {
       return action;
     });
 
-    // Appliquer l'état de la frame 0 au chargement
+    // Mettre les animations sur pause au frame 0
     actions.forEach((action) => {
       action.play();
       action.paused = true;
-      action.time = 0; // Début animation
+      action.time = 0;
       mixer.update(0);
     });
 
-    // Écouter la fin des animations
     mixer.addEventListener("finished", onAnimationFinished);
   }
 });
 
-// const controls = new OrbitControls(camera, renderer.domElement);
-
-// // Permet d'afficher la position de la caméra dans la console
-// controls.addEventListener("change", () => {
-//   console.log(
-//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
-//   );
-// });
-
 function startAnimation() {
   if (actions.length) {
-    currentActionIndex = 0; // Commencer à la première animation
+    currentActionIndex = 0;
     playNextAnimation();
   }
 }
@@ -115,6 +106,8 @@ window.addEventListener("click", animerLettreClic);
 const clock = new THREE.Clock();
 
 function animate() {
+  if (!canvasJoue) return;
+
   requestAnimationFrame(animate);
 
   const deltaTime = clock.getDelta();
@@ -138,6 +131,7 @@ function animate() {
     if (zoomProgress >= 1) {
       isZooming = false;
       console.log("Zoom terminé !");
+      nettoyerScene(); // Nettoyage ici
     }
   }
 
@@ -145,3 +139,45 @@ function animate() {
 }
 
 animate();
+
+function nettoyerScene() {
+  console.log("Nettoyage de la scène et arrêt du canvas...");
+  canvasJoue = false; // Arrête la boucle d'animation
+
+  // Libérer les ressources Three.js
+  scene.traverse((object) => {
+    if (object.isMesh) {
+      object.geometry.dispose();
+      nettoyerMateriau(object.materiel);
+    }
+  });
+
+  // Supprimer l'écouteur d'événement si besoin
+  window.removeEventListener("click", animerLettreClic);
+
+  // Supprimer le canvas
+  if (canvas.parentNode) {
+    canvas.parentNode.removeChild(canvas);
+  }
+
+  // Optionnel : libérer mixer et autres variables
+  mixer = null;
+  actions = [];
+  letterMesh = null;
+
+  console.log("Canvas supprimé et ressources libérées.");
+}
+
+function nettoyerMateriau(materiel) {
+  if (Array.isArray(materiel)) {
+    materiel.forEach(nettoyerMateriau);
+  } else {
+    for (const key in materiel) {
+      const value = materiel[key];
+      if (value && typeof value.dispose === "function") {
+        value.dispose();
+      }
+    }
+    materiel.dispose();
+  }
+}

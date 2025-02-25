@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-// Scène, caméra et rendu
+/*********************CRÉATION DE LA SCÈNE, DE LA CAMÉRA,  DU RENDU ET DE LA LUMIÈRE ******************** */
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -30,11 +30,25 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight("white", 0.5);
 directionalLight.position.set(1, 1, 1);
 scene.add(directionalLight);
+
+/*********************VARIABLES ******************** */
 let manette;
 let boutonManette;
 let railHorizontal;
 let railVertical;
 let pince;
+
+//Contrôles de la manette
+let manetteDroite = false;
+let manetteGauche = false;
+let manetteHaut = false;
+let manetteBas = false;
+
+const angleOrigineManette = 0; // Angle de base sur l'axe z (manette)
+const vitesseRetour = 0.05; // Vitesse du retour progressif
+
+//Permettre une seule direction
+let directionActuelle = null;
 
 const limitesRailHorizontal = {
   minX: 1, // Limite basse
@@ -46,35 +60,35 @@ const limitesRailVertical = {
   maxZ: 4, // Limite droite
 };
 
+// Définir un angle cible en radians (-Math.PI/4 = -45° vers la gauche)
+const targetAngle = -Math.PI;
+let animationActive = true;
+
+let angle = 0; // Angle initial
+const rotationSpeed = 0.02; // Vitesse de rotation
+
+// Ajuste selon les limites de la manette
+const limiteGauche = -0.5; // Limite de rotation vers la gauche
+const limiteDroite = 0.5; // Limite de rotation vers la droite
+const limiteHaut = -0.5; // Limite de rotation vers le haut
+const limiteBas = 0.5; // Limite de rotation vers le bas
+
+/*********************IMPORTATION DE LA MACHINE À PINCES ******************** */
 // GLTF Loader pour charger les modèles
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
   const mesh = gltf.scene;
+  //Lier les variables à l'élément correspondant dans le modèle 3D
   manette = mesh.getObjectByName("Manette");
   boutonManette = mesh.getObjectByName("Bouton-manette");
   railHorizontal = mesh.getObjectByName("Rail_horizontal");
   railVertical = mesh.getObjectByName("Rails_verticaux");
   pince = mesh.getObjectByName("Pince");
-  // //Pour avoir tous les noms d'objets
-  // mesh.traverse((child) => {
-  //   console.log(child.name, child);
-  // });
 
   scene.add(mesh);
 });
 
-//Contrôles de la manette
-let manetteDroite = false;
-let manetteGauche = false;
-let manetteHaut = false;
-let manetteBas = false;
-
-//Contrôle du bouton
-let boutonPresse = false;
-
-//Permettre une seule direction
-let directionActuelle = null;
-
+/*********************ASSOCIER TOUCHES DU CLAVIER ET MANETTE (PIVOTER LA MANETTE)******************** */
 // Écouter les événements de clavier
 window.addEventListener("keydown", (event) => {
   if (directionActuelle) return;
@@ -135,12 +149,6 @@ window.addEventListener("keyup", (event) => {
   event.preventDefault();
 });
 
-const angleOrigineManette = 0; // Angle de base sur l'axe z (manette)
-const vitesseRetour = 0.05; // Vitesse du retour progressif
-const positionOrigineBouton = 0;
-const limiteEnfoncement = positionOrigineBouton - 0.1; // Ajuste selon tes besoins
-const vitesseRetourBouton = 0.05;
-
 // // Contrôles OrbitControls pour naviguer avec la souris
 // const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -151,13 +159,7 @@ const vitesseRetourBouton = 0.05;
 //   );
 // });
 
-// Définir un angle cible en radians (-Math.PI/4 = -45° vers la gauche)
-const targetAngle = -Math.PI;
-let animationActive = true;
-
-let angle = 0; // Angle initial
-const rotationSpeed = 0.02; // Vitesse de rotation
-
+/*********************FONCTION POUR LES ÉLÉMENTS À ÊTRE MISE À JOUR ******************** */
 function animate() {
   requestAnimationFrame(animate);
   // Appliquer la gravité à chaque peluche
@@ -178,12 +180,6 @@ function animate() {
       animationActive = false; // Stopper l'animation
     }
   }
-
-  // Ajuste selon les limites que tu souhaites
-  const limiteGauche = -0.5; // Limite de rotation vers la gauche
-  const limiteDroite = 0.5; // Limite de rotation vers la droite
-  const limiteHaut = -0.5; // Limite de rotation vers le haut
-  const limiteBas = 0.5; // Limite de rotation vers le bas
 
   // Déplacer la manette avec les touches fléchées gauche/droite
   if (manette) {
@@ -261,17 +257,6 @@ function animate() {
     if (manette.rotation.x < limiteGauche) {
       manette.rotation.x = limiteGauche;
       console.log("Position de la manette : ", manette.position.x);
-    }
-  }
-  if (boutonManette) {
-    if (boutonPresse) {
-      if (boutonManette.position.y > limiteEnfoncement) {
-        boutonManette.position.y -= 0.01;
-        // console.log(boutonManette.position.y, "bouton");
-      }
-    }
-    if (pince) {
-      pince.rotation.y = 2;
     }
   }
 

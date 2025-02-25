@@ -69,12 +69,10 @@ gltfLoader.load("./modeles/enveloppe.glb", (gltf) => {
   letterMesh = mesh.getObjectByName("Lettre");
 
   scene.add(mesh);
-  mesh.position.y = -2;
   mesh.position.z = 1;
   mesh.rotation.z = Math.PI; //rotation de 180 degrés
 
   camera.position.set(0, 5.777, 1.017);
-  // camera.position.set(0, 2, 1.017);
   camera.lookAt(mesh.position);
 
   if (gltf.animations.length) {

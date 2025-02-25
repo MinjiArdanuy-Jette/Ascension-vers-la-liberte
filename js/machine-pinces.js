@@ -19,6 +19,7 @@ camera.position.x = -0.06799774919210766;
 // Rendu
 const canvas = document.querySelector("#machine-canvas");
 const renderer = new THREE.WebGLRenderer({
+  antialias: true,
   canvas,
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -33,10 +34,9 @@ scene.add(directionalLight);
 
 /*********************VARIABLES ******************** */
 let manette;
-let boutonManette;
 let railHorizontal;
 let railVertical;
-let pince;
+let plancher;
 
 //Contrôles de la manette
 let manetteDroite = false;
@@ -80,11 +80,34 @@ gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
   const mesh = gltf.scene;
   //Lier les variables à l'élément correspondant dans le modèle 3D
   manette = mesh.getObjectByName("Manette");
-  boutonManette = mesh.getObjectByName("Bouton-manette");
   railHorizontal = mesh.getObjectByName("Rail_horizontal");
   railVertical = mesh.getObjectByName("Rails_verticaux");
-  pince = mesh.getObjectByName("Pince");
+  plancher = mesh.getObjectByName("Plancher");
+  // Parcours de tous les objets avec traverse
+  mesh.traverse((objet) => {
+    if (objet.name === "Plancher") {
+      plancher = objet; // L'objet "Plancher" est trouvé
+      console.log("Oui");
+    }
+  });
 
+  if (plancher) {
+    console.log("Plancher trouvé :", plancher);
+    let hauteurPlancher = plancher.position.y; // Récupérer la hauteur une fois le plancher trouvé
+    // Génération des peluches
+    peluches.forEach(
+      ({ url, nombre, dispersionX, dispersionY, dispersionZ }) => {
+        for (let i = 0; i < nombre; i++) {
+          let posX = (Math.random() - 0.5) * dispersionX;
+          let posY = hauteurPlancher + 1;
+          let posZ = (Math.random() - 0.5) * dispersionZ;
+          importerPeluches(url, { x: posX, y: posY, z: posZ }, 0.5);
+        }
+      }
+    );
+  } else {
+    console.log("Plancher non trouvé !");
+  }
   scene.add(mesh);
 });
 
@@ -159,15 +182,86 @@ window.addEventListener("keyup", (event) => {
 //   );
 // });
 
+/*********************IMPORTATION PELUCHES ******************** */
+// Stocke les positions des peluches déjà créées
+const positionsPeluches = [];
+// Importation des différentes peluches
+function importerPeluches(url, position, scale = 1) {
+  gltfLoader.load(url, (gltf) => {
+    let peluche = gltf.scene;
+    peluche.position.set(position.x, position.y, position.z);
+    peluche.scale.set(scale, scale, scale);
+
+    peluche.rotation.y = Math.random() * Math.PI * 2;
+    peluche.rotation.x = Math.random() * 0.2 - 0.1;
+    peluche.rotation.z = Math.random() * 0.2 - 0.1;
+
+    // Vérifier que la peluche ne chevauche aucune autre
+    let tropProche = false;
+    const distanceMin = 1.5; // Définir la distance minimale entre les peluches
+    for (let i = 0; i < positionsPeluches.length; i++) {
+      const distance = Math.sqrt(
+        Math.pow(position.x - positionsPeluches[i].x, 2) +
+          Math.pow(position.y - positionsPeluches[i].y, 2) +
+          Math.pow(position.z - positionsPeluches[i].z, 2)
+      );
+
+      if (distance < distanceMin) {
+        tropProche = true;
+        break;
+      }
+    }
+
+    // Si trop proche, générer une nouvelle position
+    if (tropProche) {
+      // Régénérer la position de manière aléatoire
+      position.x = (Math.random() - 0.5) * 5; // Changer les limites de dispersion si nécessaire
+      position.z = (Math.random() - 0.5) * 5;
+      importerPeluches(url, position, scale); // Réessayer
+      return;
+    }
+
+    // Ajouter la position de la peluche à la liste
+    positionsPeluches.push(position);
+
+    scene.add(peluche);
+  });
+}
+
+// Données des peluches
+const peluches = [
+  {
+    url: "./modeles/Ours.glb",
+    nombre: 2,
+    dispersionX: 2,
+    dispersionZ: 2,
+  },
+  {
+    url: "./modeles/Lapin.glb",
+    nombre: 2,
+    dispersionX: 4,
+    dispersionZ: 2,
+  },
+  {
+    url: "./modeles/Chat.glb",
+    nombre: 2,
+    dispersionX: 2,
+    dispersionZ: 3,
+  },
+];
+// // Génération des peluches
+// peluches.forEach(({ url, nombre, dispersionX, dispersionY, dispersionZ }) => {
+//   for (let i = 0; i < nombre; i++) {
+//     let posX = (Math.random() - 0.5) * dispersionX;
+//     let posY = dispersionY;
+//     let posZ = (Math.random() - 0.5) * dispersionZ;
+//     importerPeluches(url, { x: posX, y: posY, z: posZ }, 0.5);
+//   }
+// });
+
 /*********************FONCTION POUR LES ÉLÉMENTS À ÊTRE MISE À JOUR ******************** */
 function animate() {
   requestAnimationFrame(animate);
-  // Appliquer la gravité à chaque peluche
-  scene.children.forEach((child) => {
-    if (child.isMesh) {
-      appliquerGravite(child); // Appliquer la gravité à chaque peluche
-    }
-  });
 
   if (animationActive) {
     // Rotation progressive autour de l'objet
@@ -263,71 +357,3 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
-
-/*********************IMPORTATION PELUCHES ******************** */
-
-// Importation des différentes peluches
-function importerPeluches(url, position, scale = 1) {
-  gltfLoader.load(url, (gltf) => {
-    let peluche = gltf.scene;
-    peluche.position.set(position.x, position.y, position.z);
-    peluche.scale.set(scale, scale, scale);
-
-    peluche.rotation.y = Math.random() * Math.PI * 2;
-    peluche.rotation.x = Math.random() * 0.2 - 0.1;
-    peluche.rotation.z = Math.random() * 0.2 - 0.1;
-
-    // Ajouter un état de chute à la peluche
-    peluche.enChute = true;
-
-    scene.add(peluche);
-  });
-}
-function appliquerGravite(peluche) {
-  let vitesseGravite = 0.05; // vitesse de la gravité
-  let solY = 0; // Position du sol
-
-  // Fonction de mise à jour pour appliquer la gravité
-  if (peluche.enChute) {
-    peluche.position.y -= vitesseGravite; // Descente de la peluche
-    if (peluche.position.y <= solY) {
-      peluche.position.y = solY; // Arrêter la descente lorsqu'elle touche le sol
-      peluche.enChute = false; // La peluche ne tombe plus
-    }
-  }
-}
-
-// Données des peluches
-const peluches = [
-  {
-    url: "./modeles/Ours.glb",
-    nombre: 2,
-    dispersionX: 2,
-    dispersionY: 8,
-    dispersionZ: 2,
-  },
-  {
-    url: "./modeles/Lapin.glb",
-    nombre: 2,
-    dispersionX: 5,
-    dispersionY: 12,
-    dispersionZ: 2,
-  },
-  {
-    url: "./modeles/Chat.glb",
-    nombre: 2,
-    dispersionX: 2,
-    dispersionY: 10,
-    dispersionZ: 4,
-  },
-];
-
-// Génération des peluches
-peluches.forEach(({ url, nombre, dispersionX, dispersionY, dispersionZ }) => {
-  for (let i = 0; i < nombre; i++) {
-    let posX = (Math.random() - 0.5) * dispersionX;
-    let posY = Math.random() * dispersionY;
-    let posZ = (Math.random() - 0.5) * dispersionZ;
-    importerPeluches(url, { x: posX, y: posY, z: posZ }, 0.5);
-  }
-});

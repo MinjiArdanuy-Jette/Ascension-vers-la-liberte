@@ -27,25 +27,26 @@ const directionalLight = new THREE.DirectionalLight("white", 1);
 directionalLight.position.set(1, 1, 1);
 scene.add(directionalLight);
 
-// Contrôles OrbitControls pour naviguer avec la souris
-const controls = new OrbitControls(camera, renderer.domElement);
+// // Contrôles OrbitControls pour naviguer avec la souris
+// const controls = new OrbitControls(camera, renderer.domElement);
 
-// Permet d'afficher la position de la caméra dans la console
-controls.addEventListener("change", () => {
-  console.log(
-    `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
-  );
-});
+// // Permet d'afficher la position de la caméra dans la console
+// controls.addEventListener("change", () => {
+//   console.log(
+//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
+//   );
+// });
 
-/*********************IMPORTATION DE L'ENVELOPPE ******************** */
+/*********************IMPORTATION DU COLLIER ******************** */
 
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("./modeles/Collier.glb", (gltf) => {
   mesh = gltf.scene;
   scene.add(mesh);
-  mesh.rotation.x = Math.PI;
 
-  camera.position.set(0, 22, 4);
+  mesh.rotation.y = Math.PI;
+
+  camera.position.set(0, 23, 2);
   camera.lookAt(mesh.position);
 
   if (gltf.animations.length) {
@@ -59,14 +60,24 @@ gltfLoader.load("./modeles/Collier.glb", (gltf) => {
 
     // Mettre les animations sur pause au frame 0
     actions.forEach((action) => {
-      action.play();
       action.paused = true;
       action.time = 0;
       mixer.update(0);
     });
   }
 });
-
+function startAnimation() {
+  if (actions.length > 0) {
+    actions.forEach((action) => {
+      action.reset(); // Remet l'animation au début
+      action.paused = false; // Reprend l'animation
+      action.play(); // Joue l'animation
+    });
+  }
+}
+canvas.addEventListener("click", () => {
+  startAnimation();
+});
 /*********************FONCTION POUR LES ÉLÉMENTS À ÊTRE MISE À JOUR ******************** */
 const clock = new THREE.Clock();
 function animate() {

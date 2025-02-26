@@ -108,13 +108,9 @@ main {
   background-position: center;
 }
 
-/* #machine-canvas {
-  z-index: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: transparent;
-} */
+#machine-canvas {
+  z-index: 1;
+}
 
 .entete {
   /* background-color: aqua; */
@@ -174,7 +170,15 @@ main {
 }
 
 .revelation-texte {
-  padding: 0 50px;
+  display: flex;
+  flex-direction: column; /* Aligne les h2 les uns sous les autres */
+}
+
+.revelation-texte h2 {
+  font-size: 5vw; /* La taille du texte s'adapte à la largeur de la fenêtre */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
 }
 
 .revelation-texte span {
@@ -199,6 +203,7 @@ main {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 0;
 }
 
 /*/ /////////////FOOTER//////////////*/

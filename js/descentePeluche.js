@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-/*********************CRÉATION DE LA SCÈNE, DE LA CAMÉRA, DU RENDU ET DE LA LUMIÈRE ******************** */
+/********************* CRÉATION DE LA SCÈNE *********************/
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -9,35 +9,73 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-const canvas = document.getElementById("scene2");
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  canvas,
-  alpha: true,
-});
-renderer.setSize(window.innerWidth, window.innerHeight);
+const rendu = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+document.body.appendChild(rendu.domElement);
+rendu.setSize(window.innerWidth, window.innerHeight);
 
-const ambientLight = new THREE.AmbientLight("white", 2);
-scene.add(ambientLight);
-const directionalLight = new THREE.DirectionalLight("white", 1);
-directionalLight.position.set(1, 1, 1);
-scene.add(directionalLight);
+const lumiereAmbiante = new THREE.AmbientLight("white", 2);
+scene.add(lumiereAmbiante);
+const lumiereDirectionnelle = new THREE.DirectionalLight("white", 1);
+lumiereDirectionnelle.position.set(1, 1, 1);
+scene.add(lumiereDirectionnelle);
 
-camera.position.z = 5;
+camera.position.z = 6;
 
-/*********************IMPORTATION DE LA MACHINE À PINCES ******************** */
-// GLTF Loader pour charger les modèles
-const gltfLoader = new GLTFLoader();
-gltfLoader.load("./modeles/Ours.glb", (gltf) => {
-  const mesh = gltf.scene;
-  mesh.scale.set(0.5, 0.5, 0.5);
-  scene.add(mesh);
-});
+/********************* IMPORTATION DES PELUCHES *********************/
+const chargeurGLTF = new GLTFLoader();
+const peluches = [];
+const modeles = ["Ours.glb", "Lapin.glb", "Chat.glb"];
+const nombreLignes = 4;
+const espaceColonnes = 3.5;
+const espaceLignes = 2;
 
-/*********************FONCTION POUR LES ÉLÉMENTS À ÊTRE MISE À JOUR ******************** */
-function animate() {
-  requestAnimationFrame(animate);
+for (let i = 0; i < nombreLignes; i++) {
+  for (let j = 0; j < 2; j++) {
+    const modeleAleatoire = modeles[Math.floor(Math.random() * modeles.length)];
+    chargeurGLTF.load(`./modeles/${modeleAleatoire}`, (gltf) => {
+      const peluche = gltf.scene;
+      peluche.scale.set(0.3, 0.3, 0.3);
 
-  renderer.render(scene, camera);
+      const groupePeluche = new THREE.Group();
+      groupePeluche.add(peluche);
+
+      groupePeluche.position.x = j === 0 ? -espaceColonnes : espaceColonnes;
+      groupePeluche.position.y = i * espaceLignes;
+      peluche.rotation.y = Math.random() * Math.PI;
+
+      groupePeluche.userData.vitesseRotation = {
+        x: Math.random() * 0.05 + 0.02,
+        y: Math.random() * 0.05 + 0.02,
+        z: Math.random() * 0.05 + 0.02,
+      };
+
+      scene.add(groupePeluche);
+      peluches.push(groupePeluche);
+    });
+  }
 }
-animate();
+
+/********************* SCROLL POUR FAIRE DESCENDRE *********************/
+window.addEventListener("scroll", () => {
+  const scrollY = window.scrollY;
+  const hauteurMax = document.documentElement.scrollHeight - window.innerHeight;
+  const progressionScroll = Math.min(scrollY / hauteurMax, 1);
+
+  peluches.forEach((groupePeluche, index) => {
+    if (!groupePeluche) return;
+
+    groupePeluche.position.y =
+      index * espaceLignes - progressionScroll * (nombreLignes * espaceLignes);
+
+    groupePeluche.rotation.x += groupePeluche.userData.vitesseRotation.x;
+    groupePeluche.rotation.y += groupePeluche.userData.vitesseRotation.y;
+    groupePeluche.rotation.z += groupePeluche.userData.vitesseRotation.z;
+  });
+});
+
+/********************* ANIMATION *********************/
+function animer() {
+  requestAnimationFrame(animer);
+  rendu.render(scene, camera);
+}
+animer();

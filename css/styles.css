@@ -4,9 +4,7 @@
 
 body {
   width: 100%;
-  height: 100vh;
-  /* background: linear-gradient(to right, #520052, #cf04cf); */
-  /* background-image: url("../images/arrière-plan-nuit.png"); */
+  min-height: 100vh;
   background-image: url("../images/papier-parchemin-veilli.png");
 }
 
@@ -22,18 +20,13 @@ body {
 }
 
 h1,
-h2,
 p {
   font-family: "Playfair Display";
 }
 
-h2 {
-  font-size: 4rem;
-}
-
 .info-canvas-enveloppe {
   position: fixed;
-  top: 50%;
+  top: 70%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: var(--couleur-blanche);
@@ -91,11 +84,7 @@ header {
 }
 
 /*/ /////////////MAIN//////////////*/
-main {
-  /* display: flex;
-  justify-content: center; */
-  /* background-color: red; */
-}
+
 /* Canvas pour Three.js */
 
 #enveloppe-canvas {
@@ -110,10 +99,10 @@ main {
 
 #machine-canvas {
   z-index: 1;
+  /* background-image: url("../images/arrière-plan-nuit.png"); */
 }
 
 .entete {
-  /* background-color: aqua; */
   padding: 0 2rem;
   display: flex;
   align-items: center;
@@ -125,49 +114,8 @@ main {
 .entete h1 {
   font-size: 7rem;
 }
-.entete h2 {
-  font-size: 4rem;
-}
-/*Section 1 : règles en fonction du physique pour être désirable*/
-.regles-physiques {
-  position: relative;
-  padding: 2rem 2rem;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-.regles-physiques h1 {
-  text-align: center;
-  font-size: 6rem;
-}
 
-.recs {
-  display: flex;
-  flex-direction: column;
-}
-.contenu-rec {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  opacity: 0;
-  transform: translateY(100px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
-
-.contenu-rec.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.rec {
-  border: 1px solid var(--couleur-noire);
-  width: 400px;
-  height: 330px;
-  background-color: chartreuse;
-}
-.contenu-rec:nth-child(even) {
-  flex-direction: row-reverse;
-}
+/*Styles pour le texte de la lettre*/
 
 .revelation-texte {
   display: flex;
@@ -175,10 +123,11 @@ main {
 }
 
 .revelation-texte h2 {
-  font-size: 5vw; /* La taille du texte s'adapte à la largeur de la fenêtre */
+  font-size: 2vw; /* La taille du texte s'adapte à la largeur de la fenêtre */
   word-wrap: break-word;
   overflow-wrap: break-word;
   text-align: center;
+  font-family: "Grechen Fuemen", serif;
 }
 
 .revelation-texte span {
@@ -194,24 +143,23 @@ main {
 }
 
 #scene1 {
-  width: 100%;
-  height: 600px;
-  display: block;
+  width: 50%;
+  height: auto;
+  float: right;
 }
 
 #scene2 {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: -1;
 }
 
-/*/ /////////////FOOTER//////////////*/
-/* footer {
-  width: 100%;
-  height: 10vh;
-  background-color: var(--couleur-noire);
+@media (max-width: 768px) {
+  h1 {
+    font-size: 4rem;
+  }
+  .revelation-texte h2 {
+    font-size: 1rem; /* Taille plus grande pour les écrans plus petits */
+  }
 }
-footer h1 {
-  color: white;
-} */

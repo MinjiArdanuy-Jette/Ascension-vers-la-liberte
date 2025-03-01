@@ -21,6 +21,7 @@ const canvas = document.querySelector("#machine-canvas");
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
   canvas,
+  alpha: true,
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -33,12 +34,13 @@ directionalLight.position.set(1, 1, 1);
 scene.add(directionalLight);
 
 /*********************VARIABLES ******************** */
+//Variable pour les éléments de la machine qui vont servir à interagir
 let manette;
 let railHorizontal;
 let railVertical;
 let plancher;
 
-//Contrôles de la manette
+//Contrôles de la manette (boolean)
 let manetteDroite = false;
 let manetteGauche = false;
 let manetteHaut = false;
@@ -61,11 +63,11 @@ const limitesRailVertical = {
 };
 
 // Définir un angle cible en radians (-Math.PI/4 = -45° vers la gauche)
-const targetAngle = -Math.PI;
+const angleCible = -Math.PI;
 let animationActive = true;
 
 let angle = 0; // Angle initial
-const rotationSpeed = 0.02; // Vitesse de rotation
+const vitesseRotationMachine = 0.02; // Vitesse de rotation
 
 // Ajuste selon les limites de la manette
 const limiteGauche = -0.5; // Limite de rotation vers la gauche
@@ -78,41 +80,31 @@ const limiteBas = 0.5; // Limite de rotation vers le bas
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("./modeles/Machine-pince.glb", (gltf) => {
   const mesh = gltf.scene;
+
   //Lier les variables à l'élément correspondant dans le modèle 3D
   manette = mesh.getObjectByName("Manette");
   railHorizontal = mesh.getObjectByName("Rail_horizontal");
   railVertical = mesh.getObjectByName("Rails_verticaux");
   plancher = mesh.getObjectByName("Plancher");
-  // Parcours de tous les objets avec traverse
-  mesh.traverse((objet) => {
-    if (objet.name === "Plancher") {
-      plancher = objet; // L'objet "Plancher" est trouvé
-      console.log("Oui");
-    }
-  });
 
   if (plancher) {
-    console.log("Plancher trouvé :", plancher);
+    // console.log("Plancher trouvé :", plancher);
     let hauteurPlancher = plancher.position.y; // Récupérer la hauteur une fois le plancher trouvé
-    // Génération des peluches
-    peluches.forEach(
-      ({ url, nombre, dispersionX, dispersionY, dispersionZ }) => {
-        for (let i = 0; i < nombre; i++) {
-          let posX = (Math.random() - 0.5) * dispersionX;
-          let posY = hauteurPlancher + 1;
-          let posZ = (Math.random() - 0.5) * dispersionZ;
-          importerPeluches(url, { x: posX, y: posY, z: posZ }, 0.5);
-        }
+    // Génération des peluches (variables nommés ci-dessous - importation peluches)
+    peluches.forEach(({ url, nombre, dispersionX, dispersionZ }) => {
+      for (let i = 0; i < nombre; i++) {
+        let posX = (Math.random() - 0.5) * dispersionX;
+        let posY = hauteurPlancher + 1; //+1 pour pas que les peluches soient dans le plancher
+        let posZ = (Math.random() - 0.5) * dispersionZ;
+        importerPeluches(url, { x: posX, y: posY, z: posZ }, 0.5); //Fonction qui se trouve plus bas (importation Peluches)
       }
-    );
-  } else {
-    console.log("Plancher non trouvé !");
+    });
   }
   scene.add(mesh);
 });
 
 /*********************ASSOCIER TOUCHES DU CLAVIER ET MANETTE (PIVOTER LA MANETTE)******************** */
-// Écouter les événements de clavier
+// Écouter les événements de clavier - connaitre si les touches du clavier sont appuyées ou non
 window.addEventListener("keydown", (event) => {
   if (directionActuelle) return;
   switch (event.key) {
@@ -172,26 +164,16 @@ window.addEventListener("keyup", (event) => {
   event.preventDefault();
 });
 
-// // Contrôles OrbitControls pour naviguer avec la souris
-// const controls = new OrbitControls(camera, renderer.domElement);
-
-// // Permet d'afficher la position de la caméra dans la console
-// controls.addEventListener("change", () => {
-//   console.log(
-//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
-//   );
-// });
-
 /*********************IMPORTATION PELUCHES ******************** */
 // Stocke les positions des peluches déjà créées
 const positionsPeluches = [];
 // Importation des différentes peluches
-function importerPeluches(url, position, scale = 1) {
+function importerPeluches(url, position, echelle = 1) {
   gltfLoader.load(url, (gltf) => {
     let peluche = gltf.scene;
     peluche.position.set(position.x, position.y, position.z);
-    peluche.scale.set(scale, scale, scale);
-
+    peluche.scale.set(echelle, echelle, echelle);
+    //Rotation aléatoire
     peluche.rotation.y = Math.random() * Math.PI * 2;
     peluche.rotation.x = Math.random() * 0.2 - 0.1;
     peluche.rotation.z = Math.random() * 0.2 - 0.1;
@@ -217,7 +199,7 @@ function importerPeluches(url, position, scale = 1) {
       // Régénérer la position de manière aléatoire
       position.x = (Math.random() - 0.5) * 5; // Changer les limites de dispersion si nécessaire
       position.z = (Math.random() - 0.5) * 5;
-      importerPeluches(url, position, scale); // Réessayer
+      importerPeluches(url, position, echelle); // Réessayer
       return;
     }
 
@@ -232,41 +214,32 @@ function importerPeluches(url, position, scale = 1) {
 const peluches = [
   {
     url: "./modeles/Ours.glb",
-    nombre: 2,
+    nombre: 4,
     dispersionX: 2,
     dispersionZ: 2,
   },
   {
     url: "./modeles/Lapin.glb",
-    nombre: 2,
+    nombre: 5,
     dispersionX: 4,
     dispersionZ: 2,
   },
   {
     url: "./modeles/Chat.glb",
-    nombre: 2,
+    nombre: 5,
     dispersionX: 2,
     dispersionZ: 3,
   },
 ];
-// // Génération des peluches
-// peluches.forEach(({ url, nombre, dispersionX, dispersionY, dispersionZ }) => {
-//   for (let i = 0; i < nombre; i++) {
-//     let posX = (Math.random() - 0.5) * dispersionX;
-//     let posY = dispersionY;
-//     let posZ = (Math.random() - 0.5) * dispersionZ;
-//     importerPeluches(url, { x: posX, y: posY, z: posZ }, 0.5);
-//   }
-// });
 
 /*********************FONCTION POUR LES ÉLÉMENTS À ÊTRE MISE À JOUR ******************** */
 function animate() {
   requestAnimationFrame(animate);
-
+  //Rotation de la machine au chargement (on ne la voit pas)
   if (animationActive) {
     // Rotation progressive autour de l'objet
-    if (angle > targetAngle) {
-      angle -= rotationSpeed;
+    if (angle > angleCible) {
+      angle -= vitesseRotationMachine;
       camera.position.x = Math.cos(angle) * 20; // Rayon de rotation
       camera.position.z = Math.sin(angle) * 10;
       camera.lookAt(0, 0, 0); // Toujours regarder le centre de la scène
@@ -338,12 +311,12 @@ function animate() {
       if (manette.rotation.z > angleOrigineManette) {
         manette.rotation.z -= vitesseRetour;
         if (manette.rotation.z < angleOrigineManette) {
-          manette.rotation.z = angleOrigineManette;
+          manette.rotation.z = angleOrigineManette; // Corrige pour éviter de dépasser
         }
       } else if (manette.rotation.z < angleOrigineManette) {
         manette.rotation.z += vitesseRetour;
         if (manette.rotation.z > angleOrigineManette) {
-          manette.rotation.z = angleOrigineManette;
+          manette.rotation.z = angleOrigineManette; // Corrige pour éviter de dépasser
         }
       }
     }

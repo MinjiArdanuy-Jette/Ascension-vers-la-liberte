@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 /*********************DÉSACTIVATION DU SCROLL DE LA PAGE ******************** */
 //Désactiver le scroll dès le chargement de la page
@@ -23,13 +22,13 @@ function reactiverScroll() {
 /*********************VARIABLES ******************** */
 let titrePrincipal = document.querySelector(".titre-site");
 let letterMesh;
-let mixer;
+let mixer; //Animation de l'enveloppe
 let actions = [];
-let currentActionIndex = 0;
+let indexActionActuelle = 0;
 let isZooming = false;
-let zoomProgress = 0;
-const zoomDuration = 2;
-const zoomTargetPosition = new THREE.Vector3(0, 1.5475618749999955, 0.5);
+let zoomProgresse = 0;
+const dureeZoom = 2;
+const cibleZoom = new THREE.Vector3(0, 1.5475618749999955, 0.5);
 let canvasJoue = true; // Contrôle la boucle d'animation
 
 let animationJoue = false;
@@ -38,6 +37,63 @@ let mesh;
 let rotationFinale = false; // Déclenchement de la rotation
 let rotationProgress = 0;
 const rotationDuration = 1; // Durée de l'animation de rotation (en secondes)
+
+/*********************APPARITION DU TITRE******************** */
+document.addEventListener("DOMContentLoaded", () => {
+  // Afficher le titre avec une animation
+  titrePrincipal.classList.add("titre-visible");
+
+  // Déclencher la disparition après 3 secondes
+  setTimeout(() => {
+    console.log("Titre va disparaitre automatiquement");
+
+    titrePrincipal.classList.add("titre-disparait");
+    titrePrincipal.classList.remove("titre-visible");
+
+    setTimeout(() => {
+      titrePrincipal.style.display = "none";
+      animerEntreeEnveloppe();
+    }, 50);
+  }, 3000); // Durée avant disparition du titre en milisecondes
+});
+const phrases = [
+  "Le moment est venu...",
+  "Serai-je à la hauteur ? Je suis prête, mais pourquoi j'angoisse ?",
+  "Tous les regards vont être rivés sur moi, des sourires bienveillants, des chuchotements et des silences...",
+  "Il est temps d'ouvrir cette lettre. Ouvrons-là !",
+];
+
+let indexPhrase = 0;
+const texteCanvas = document.querySelector(".info-canvas-enveloppe"); // L'élément où afficher les phrases
+
+function afficherProchainePhrase() {
+  if (indexPhrase < phrases.length) {
+    let phrase = phrases[indexPhrase];
+    let indexLettreActuel = 0;
+    texteCanvas.textContent = ""; // Réinitialiser le contenu avant d'afficher une nouvelle phrase
+
+    function afficherLettreParLettre() {
+      if (indexLettreActuel < phrase.length) {
+        texteCanvas.textContent += phrase[indexLettreActuel];
+        indexLettreActuel++;
+        setTimeout(afficherLettreParLettre, 100);
+      } else {
+        setTimeout(() => {
+          indexPhrase++;
+          afficherProchainePhrase();
+        }, 2000);
+      }
+    }
+
+    afficherLettreParLettre();
+  } else {
+    canvas.addEventListener("click", animerLettreClic);
+  }
+}
+
+// Démarrer l'affichage des phrases
+setTimeout(afficherProchainePhrase, 4000); // Début après 4 secondes
+
 /*********************CRÉATION DE LA SCÈNE, DE LA CAMÉRA, DU RENDU ET DE LA LUMIÈRE ******************** */
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -72,9 +128,11 @@ gltfLoader.load("./modeles/enveloppe.glb", (gltf) => {
   mesh.position.z = 1;
   mesh.rotation.z = Math.PI; //rotation de 180 degrés
 
+  mesh.visible = false; // Cache l'enveloppe au chargement
+
   camera.position.set(0, 5.777, 1.017);
   camera.lookAt(mesh.position);
-
+  //Faire jouer les animatioins de l'enveloppe
   if (gltf.animations.length) {
     mixer = new THREE.AnimationMixer(mesh);
     actions = gltf.animations.map((clip) => {
@@ -91,51 +149,68 @@ gltfLoader.load("./modeles/enveloppe.glb", (gltf) => {
       action.time = 0;
       mixer.update(0);
     });
-
-    mixer.addEventListener("finished", onAnimationFinished);
+    //Si toutes les animations sont terminées, alors ont zoom sur la lettre
+    mixer.addEventListener("finished", animationTerminer);
   }
 });
 
-// // Contrôles OrbitControls pour naviguer avec la souris
-// const controls = new OrbitControls(camera, renderer.domElement);
-
-// // Permet d'afficher la position de la caméra dans la console
-// controls.addEventListener("change", () => {
-//   console.log(
-//     `Position de la caméra : x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`
-//   );
-// });
-
 /*********************FONCTIONS POUR LANCER L'ANIMATIONI DE L'ENVELOPPE ******************** */
 
-function startAnimation() {
+function animerEntreeEnveloppe() {
+  let progression = 0;
+  const duree = 0.2; // Durée de l'animation
+  const positionDepart = 12; // Position de départ sous la scène
+  const positionFinale = 1; // Position finale dans la scène
+
+  mesh.visible = true; // Rendre l'enveloppe visible avant l'animation
+
+  function animation() {
+    if (progression < 1) {
+      progression += clock.getDelta() / duree;
+      progression = Math.min(progression, 1);
+
+      const positionY = THREE.MathUtils.lerp(
+        positionDepart,
+        positionFinale,
+        progression
+      );
+      mesh.position.z = positionY;
+
+      requestAnimationFrame(animation);
+    }
+  }
+
+  animation();
+}
+
+function commencerAnimationLettre() {
   if (actions.length) {
-    currentActionIndex = 0;
-    playNextAnimation();
+    indexActionActuelle = 0;
+    jouerAnimationSuivante();
   }
 }
 
-function playNextAnimation() {
-  if (currentActionIndex < actions.length) {
-    const action = actions[currentActionIndex];
+function jouerAnimationSuivante() {
+  if (indexActionActuelle < actions.length) {
+    const action = actions[indexActionActuelle];
     action.reset();
     action.play();
   } else {
     console.log("Toutes les animations sont terminées !");
-    startZoom();
+    debutZoom();
   }
 }
 
-function onAnimationFinished() {
-  console.log(`Animation ${currentActionIndex + 1} terminée`);
-  currentActionIndex++;
-  playNextAnimation();
+function animationTerminer() {
+  console.log(`Animation ${indexActionActuelle + 1} terminée`);
+  indexActionActuelle++;
+  jouerAnimationSuivante();
 }
 
-function startZoom() {
+function debutZoom() {
   console.log("Début du zoom !");
   isZooming = true;
-  zoomProgress = 0;
+  zoomProgresse = 0;
 }
 
 //Fonction pour jouer l'animation au clic du canvsa
@@ -151,8 +226,6 @@ function animerLettreClic() {
 function preventScroll(event) {
   event.preventDefault();
 }
-
-canvas.addEventListener("click", animerLettreClic);
 
 const clock = new THREE.Clock();
 
@@ -178,23 +251,23 @@ function animate() {
 
     if (rotationProgress >= 1) {
       rotationFinale = false;
-      startAnimation(); // Lancer l'animation après la rotation
+      commencerAnimationLettre(); // Lancer l'animation après la rotation
     }
   }
 
   if (isZooming) {
-    zoomProgress += deltaTime / zoomDuration;
-    zoomProgress = Math.min(zoomProgress, 1);
+    zoomProgresse += deltaTime / dureeZoom;
+    zoomProgresse = Math.min(zoomProgresse, 1);
 
     camera.position.lerpVectors(
       new THREE.Vector3(0, 5.777, 1.017),
-      zoomTargetPosition,
-      zoomProgress
+      cibleZoom,
+      zoomProgresse
     );
 
     camera.lookAt(letterMesh.position);
 
-    if (zoomProgress >= 1) {
+    if (zoomProgresse >= 1) {
       isZooming = false;
       console.log("Zoom terminé !");
       nettoyerScene(); // Nettoyage ici

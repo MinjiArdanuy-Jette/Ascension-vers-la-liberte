@@ -24,24 +24,23 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Protest+Riot&display=swap"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Grechen+Fuemen&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <header>
-      <nav class="menu">
-        <ul class="barre-navigation">
-          <li><a href="">Brochure</a></li>
-          <li><a href="">Informations</a></li>
-        </ul>
-      </nav>
-    </header>
     <main>
       <!-- <canvas id="three-canvas"></canvas> -->
-      <h1 class="info-canvas-enveloppe">Ouvre</h1>
+      <h1 class="info-canvas-enveloppe"></h1>
+
       <h1 class="titre-site">L'Ascension d'Alice</h1>
       <canvas id="enveloppe-canvas"></canvas>
-      <div class="entete">
-        <h1>Guide pour officiel de la cérémonie de l'Ascension</h1>
-      </div>
+      <!-- <div class="entete">
+        <h1>Guide officiel de la cérémonie de l'Ascension</h1>
+      </div> -->
       <div class="heure-fond" id="heureFond">00:00</div>
       <section class="revelation-texte">
         <h2 data-texte="Chère Alice,"></h2>
@@ -61,59 +60,36 @@
         <h2
           data-texte="Nous offrons à chacun des sélectionnés un magnifique collier"
         ></h2>
-        <h2 data-texte="Un plaisir partagé si ce dernier"></h2>
-        <h2 data-texte="Caresserait votre cou hâlé"></h2>
+        <h2 data-texte="Un plaisir partagé quand ce dernier"></h2>
+        <h2 data-texte="Caressera votre cou hâlé"></h2>
+        <canvas id="scene1"></canvas>
         <h2
-          data-texte="Au coup de 12:12, habillé de vos apparats, vous paraderiez avant d’ouvrir les portes de la liberté."
+          data-texte="Au coup de 12:12, habillé de vos apparats, parade jusqu'au sommet"
         ></h2>
         <h2 data-texte="On vous attend"></h2>
         <h2
           data-texte="Quand la pince viendra, calme et sereine, Que ton cœur batte fort, mais sans peine."
         ></h2>
         <h2
-          data-texte="La montée, douce Alice, est pour toi, Accueille-la, sans crainte, sans émoi, Car ceux qui s’élèvent, qui s’effacent, Deviennent les élus de cette vaste grâce."
+          data-texte="La montée, douce Alice, est pour toi, Accueille-la, sans crainte, sans émoi,"
         ></h2>
         <h2
-          data-texte="Laisse le temps se poser sur ton chemin, Et quand viendra le moment, sois prête à demain. La Déesse ne choisit que ceux qui brillent, Et toi, Alice, tu brilles comme mille."
+          data-texte="Car ceux qui s’élèvent, qui s’effacent, Deviennent les élus de cette vaste grâce."
+        ></h2>
+        <h2 data-texte="Laisse le temps se poser sur ton chemin,"></h2>
+        <h2 data-texte="Et quand viendra le moment, sois prête à demain."></h2>
+        <h2
+          data-texte="La Déesse ne choisit que ceux qui brillent, Et toi, Alice, tu brilles comme mille."
         ></h2>
         <h2 data-texte="Avec toute notre foi,"></h2>
       </section>
-      <canvas id="scene1"></canvas>
       <canvas id="scene2"></canvas>
 
-      <!-- <section class="regles-physiques" id="section-1">
-        <h1>Règles sur le physique</h1>
-        <div class="recs">
-          <div class="contenu-rec">
-            <div class="rec"></div>
-            <p>
-              Vous et avec plusieurs chanceux, êtes la 15000e cohorte qui ont le
-              privilège d'atteindre le sommet. Pour cette grande occasion, nous
-              vous offrons un collier unique que vous pourrez pprter avec
-              élégance lors de la cérémonie de l'Ascension. Il est important de
-              souligner qu'aucun retard n'est permis. On vous invite à vous
-              présenter à 12h12.
-            </p>
-          </div>
-          <div class="contenu-rec">
-            <div class="rec"></div>
-            <p>
-              Pour le bon fonctionnement de cette cérémonie, quelques règles
-              sont essentielles.
-            </p>
-          </div>
-          <div class="contenu-rec">
-            <div class="rec"></div>
-            <p>Les vêtements....</p>
-          </div>
-        </div>
-      </section> -->
       <canvas id="machine-canvas"></canvas>
     </main>
+    <script type="module" src="js/effetDefilement.js"></script>
     <script type="module" src="js/machine-pinces.js"></script>
     <script type="module" src="js/enveloppe.js"></script>
-    <script src="js/defilement.js"></script>
     <script type="module" src="js/collier.js"></script>
-    <script type="module" src="js/descentePeluche.js"></script>
   </body>
 </html>

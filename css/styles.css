@@ -92,7 +92,7 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  background-image: url("../images/arrière-plan-nuit.png");
+  background-image: url("../images/arriere-plan_nuit.png");
   background-size: cover; /* Couvre tout l'écran */
   background-position: center;
 }
